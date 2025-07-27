@@ -1,0 +1,25 @@
+#!/bin/fish
+
+set command ""
+
+while true
+	set args (printf "--dub\n--vlc\n--continue\n--download" | wofi  --dmenu --style ~/.config/wofi/wofi_styles.css --prompt $command)
+	if test -z $args
+		exit
+	end
+	if string match -q "*$args*" -- $command
+		set command (echo $command | sed "s/$args//g")
+	else	
+		set command "$command $args"
+		if not string match -r '^--' -- $args
+			break
+		else if string match -q "*--continue*" -- "*$args*"
+			break
+		end
+	end
+end 
+
+if not test -z $args
+	fish -c "ani-cli --wofi $command"		
+end
+
